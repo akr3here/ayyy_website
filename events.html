@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events</title>
+  <link rel="icon" type="image/png" href="Assets/main_logo.png" />
+
+  <!-- Google Fonts: Geometric / Extended tech aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN TOKENS
+    ------------------------------------------------------------- */
+    :root {
+      --bg-color: #b50505;
+      --text-color: #ffffff;
+      --card-bg: #000000;              /* Neutral black prevents flash on buffer */
+      --font-display: 'Michroma', sans-serif;
+      --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --page-padding: 3rem 4rem;
+      --card-radius: 20px;
+      --card-gap: 1.5rem;
+      --transition-smooth: 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-display);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: var(--page-padding);
+    }
+
+    /* -------------------------------------------------------------
+       BUTTON / INTERACTION UTILITY
+    ------------------------------------------------------------- */
+    .char-btn,
+    .interactive {
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      transition: transform var(--transition-smooth), opacity var(--transition-smooth);
+    }
+
+    .char-btn:hover,
+    .interactive:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
+    }
+
+    .char-btn:focus-visible,
+    .interactive:focus-visible {
+      outline: 2px dashed #ffffff;
+      outline-offset: 4px;
+    }
+
+    /* -------------------------------------------------------------
+       TOP NAVIGATION BAR
+    ------------------------------------------------------------- */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-shrink: 0;
+      z-index: 50;
+      background: transparent;
+    }
+
+    .nav-back {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: transform var(--transition-smooth);
+    }
+
+    .nav-back:hover {
+      transform: translateX(-4px);
+    }
+
+    .nav-back svg {
+      width: 38px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 3.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      transition: opacity var(--transition-smooth);
+    }
+
+    .nav-links a:hover {
+      opacity: 0.75;
+    }
+
+    .nav-links .home-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+
+    /* -------------------------------------------------------------
+       PAGE TITLE & SUBTITLE
+    ------------------------------------------------------------- */
+    .page-header {
+      margin-top: 1.8rem;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .heading-large {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      margin-bottom: 0.6rem;
+    }
+
+    .char-item {
+      display: inline-block;
+    }
+
+    .sub-copy {
+      display: inline-block;
+      font-size: 1.55rem;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+      background: rgba(125, 0, 0, 0.45);
+      padding: 0.35rem 1rem 0.5rem 0.6rem;
+      max-width: 780px;
+    }
+
+    /* -------------------------------------------------------------
+       MAIN STAGE: SCROLLABLE FEED + STATIC RIGHT RAIL
+    ------------------------------------------------------------- */
+    .media-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 68%) minmax(220px, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+      gap: 3.5rem;
+      flex-grow: 1;
+      min-height: 0;
+      background: transparent;
+    }
+
+    .events-scroll-feed {
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      padding-right: 4px;
+      position: relative;
+    }
+
+    .events-scroll-feed::-webkit-scrollbar {
+      display: none;
+    }
+
+    .feed-inner {
+      display: flex;
+      flex-direction: column;
+      gap: var(--card-gap);
+      width: 80%;
+      margin: 0; 
+      padding-bottom: 6rem;
+    }
+
+    /* Primary 16:9 Featured Container */
+    .feature-card-16-9 {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: var(--card-bg);
+      border-radius: var(--card-radius);
+      flex-shrink: 0;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      transform-origin: center center;
+      will-change: transform, opacity;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+    }
+
+    /* 3-Column Vertical 9:16 Container Grid */
+    .vertical-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--card-gap);
+      width: 100%;
+      flex-shrink: 0;
+      transform-origin: center center;
+      will-change: transform, opacity;
+    }
+
+    .reel-card-9-16 {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      background-color: var(--card-bg);
+      border-radius: var(--card-radius);
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Video & Image Media Styling */
+    .card-video,
+    .yt-thumb-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 1;
+    }
+
+    .feature-card-16-9.is-previewing .yt-thumb-layer,
+    .reel-card-9-16.is-previewing .yt-thumb-layer {
+      opacity: 0;
+    }
+
+    /* Hover Preview Iframe */
+    .yt-hover-preview {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120%;
+      height: 120%;
+      transform: translate(-50%, -50%);
+      border: none;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* -------------------------------------------------------------
+       CARD BOTTOM HOVER DESCRIPTION OVERLAY
+    ------------------------------------------------------------- */
+    .card-caption-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2.2rem 1.8rem 1.4rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 60%, transparent 100%);
+      color: #ffffff;
+      pointer-events: none;
+      z-index: 5;
+      transform: translateY(10px);
+      opacity: 0;
+      transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .feature-card-16-9:hover .card-caption-overlay,
+    .feature-card-16-9:focus-visible .card-caption-overlay,
+    .reel-card-9-16:hover .card-caption-overlay,
+    .reel-card-9-16:focus-visible .card-caption-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card-caption-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .card-caption-desc {
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      line-height: 1.4;
+      letter-spacing: 0.03em;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    /* -------------------------------------------------------------
+       STATIC RIGHT RAIL
+    ------------------------------------------------------------- */
+    .static-right-rail {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      text-align: right;
+      padding-bottom: 2rem;
+      user-select: none;
+      background: transparent;
+    }
+
+    .side-links-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      margin-bottom: 3rem;
+    }
+
+    .side-link {
+      font-size: 1.35rem;
+      letter-spacing: 0.04em;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+    }
+
+    .side-link:hover {
+      opacity: 0.75;
+      transform: translateX(-3px);
+    }
+
+    .clients-rail-cta {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+    }
+
+    .clients-rail-cta:hover {
+      opacity: 0.85;
+      transform: translateX(-4px);
+    }
+
+    /* -------------------------------------------------------------
+       FULLSCREEN VIDEO MODAL (MP4 + YOUTUBE + SHORTS SUPPORT)
+    ------------------------------------------------------------- */
+    .video-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-media-wrapper {
+      width: 90vw;
+      max-width: 1400px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      transform: scale(0.94);
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Snaps the modal into a dedicated 9:16 portrait view for Shorts/Reels */
+    .modal-media-wrapper.is-vertical {
+      width: auto;
+      height: 85vh;
+      aspect-ratio: 9 / 16;
+      max-width: calc(85vh * 9 / 16);
+    }
+
+    .video-modal.is-open .modal-media-wrapper {
+      transform: scale(1);
+    }
+
+    .video-modal-player,
+    .video-modal-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+      display: none;
+    }
+
+    .video-modal-close {
+      position: absolute;
+      top: 2rem;
+      right: 2.5rem;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(181, 5, 5, 0.85);
+      border: none;
+      border-radius: 50%;
+      color: var(--text-color);
+      cursor: pointer;
+      z-index: 1001;
+      transition: transform var(--transition-smooth), background var(--transition-smooth);
+    }
+
+    .video-modal-close:hover {
+      background: var(--bg-color);
+      transform: scale(1.08);
+    }
+
+    .video-modal-close svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    /* -------------------------------------------------------------
+       RESPONSIVE ADJUSTMENTS
+    ------------------------------------------------------------- */
+    @media (max-width: 1100px) {
+      body {
+        height: auto;
+        overflow-y: auto;
+        padding: 2rem 1.5rem;
+      }
+      .media-stage {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 2.5rem;
+      }
+      .events-scroll-feed {
+        height: 600px;
+        overflow-y: auto;
+      }
+      .feed-inner {
+        width: 100%;
+      }
+      .static-right-rail {
+        align-items: flex-start;
+        text-align: left;
+        padding-bottom: 1rem;
+      }
+      .heading-large {
+        font-size: 2.8rem;
+      }
+      .sub-copy {
+        font-size: 1.2rem;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .vertical-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .feature-card-16-9,
+      .vertical-cards-grid {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <button class="nav-back" aria-label="Go back">
+      <svg viewBox="0 0 40 24">
+        <line x1="38" y1="12" x2="4" y2="12"></line>
+        <polyline points="14 3 3 12 14 21"></polyline>
+      </svg>
+    </button>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="contact.html" class="interactive">CONTACT</a></li>
+        <li><a href="how.html" class="interactive">HOW</a></li>
+        <li><a href="why.html" class="interactive">WHY</a></li>
+        <li>
+          <a href="index.html" class="interactive home-icon" aria-label="Home">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"></path>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Title & Subtitle Header -->
+  <div class="page-header">
+    <h1 class="heading-large">
+      <span class="char-item">E</span><span class="char-item">v</span><span class="char-item">e</span><span class="char-item">n</span><span class="char-item">t</span><span class="char-item">s</span>
+    </h1>
+    <div class="sub-copy">
+      For those who couldn’t make it to the event, We’ve got your back.
+    </div>
+  </div>
+
+  <!-- Main Stage -->
+  <main class="media-stage">
+
+    <!-- Scrollable Left Section -->
+    <div class="events-scroll-feed" id="eventsScrollFeed">
+      <div class="feed-inner">
+        
+        <!-- 16:9 Primary Event Display -->
+        <div class="feature-card-16-9 interactive" role="button" tabindex="0" data-youtube-id="57adKBvo1Wc" aria-label="Neelkamal-AceTech">
+          <img 
+            src="Stills/nk.webp" 
+            onerror="this.src='https://img.youtube.com/vi/57adKBvo1Wc/hqdefault.jpg'" 
+            alt="NeelKamal - AceTech Preview" 
+            class="yt-thumb-layer" 
+          />
+          <div class="card-caption-overlay">
+            <span class="card-caption-title">NeelKamal - AceTech</span>
+            <span class="card-caption-desc"></span>
+          </div>
+        </div>
+
+        <!-- Row of 9:16 Vertical Containers (Supports MP4 or YouTube Shorts) -->
+        <div class="vertical-cards-grid">
+          
+          <!-- Event Reel 1: Standard MP4 (Set data-aspect="vertical") -->
+          <div class="reel-card-9-16 interactive" role="button" tabindex="0" data-aspect="vertical" aria-label="Event Reel 1">
+            <video class="card-video" muted loop playsinline preload="none" poster="Stills/SUHANI_SHORTS.webp">
+              <source src="https://piyush.alokray.com/Suhani_Event.mp4" type="video/mp4">
+            </video>
+            <div class="card-caption-overlay">
+              <span class="card-caption-title">Suhani Shah</span>
+              <span class="card-caption-desc">PepsiCo Event</span>
+            </div>
+          </div>
+
+          <!-- Event Reel 2: Example YouTube Short Container -->
+          <div class="reel-card-9-16 interactive" role="button" tabindex="0" data-youtube-id="MAN71HalaQU" data-aspect="vertical" aria-label="Event Reel 2">
+            <img 
+              src="Stills/monkey_shoulder.webp" 
+              onerror="this.src='https://img.youtube.com/vi/MAN71HalaQU/hqdefault.jpg'" 
+              alt="Short preview" 
+              class="yt-thumb-layer" 
+            />
+            <div class="card-caption-overlay">
+              <span class="card-caption-title">The Monkey Shoulder</span>
+              <span class="card-caption-desc">Diwali Party</span>
+            </div>
+          </div>
+
+          <!-- Event Reel 3: Standard MP4 -->
+          <div class="reel-card-9-16 interactive" role="button" tabindex="0" data-aspect="vertical" aria-label="Event Reel 3">
+            <video class="card-video" muted loop playsinline preload="none" poster="Stills/unheard.webp">
+              <source src="https://piyush.alokray.com/Unheard.mp4" type="video/mp4">
+            </video>
+            <div class="card-caption-overlay">
+              <span class="card-caption-title">SkillBox</span>
+              <span class="card-caption-desc">Presents Unheard</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Pinned Static Right Rail -->
+    <aside class="static-right-rail">
+      <nav class="side-links-group">
+        <!-- <a href="documentaries.html" class="side-link interactive">Documentaries</a> -->
+        <a href="social-media.html" class="side-link interactive">Social Media</a>
+        <a href="podcasts.html" class="side-link interactive">Podcasts</a>
+        <a href="more.html" class="side-link interactive">More</a>
+      </nav>
+
+      <a href="clients-projects.html" class="clients-rail-cta interactive">
+        CLIENTS &amp;<br>PROJECTS
+      </a>
+    </aside>
+
+  </main>
+
+  <!-- Fullscreen Video Modal (Handles both MP4 & YouTube + Horizontal & Vertical) -->
+  <div class="video-modal" id="videoModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Video player">
+    <button class="video-modal-close" id="videoModalClose" aria-label="Close video">
+      <svg viewBox="0 0 24 24">
+        <line x1="5" y1="5" x2="19" y2="19"></line>
+        <line x1="19" y1="5" x2="5" y2="19"></line>
+      </svg>
+    </button>
+    <div class="modal-media-wrapper">
+      <video class="video-modal-player" id="modalVideo" controls playsinline></video>
+      <iframe 
+        class="video-modal-iframe" 
+        id="modalIframe" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    /* -------------------------------------------------------------
+       1. SMART HOVER PREVIEWS (MP4 + YOUTUBE LAZY PREVIEW)
+    ------------------------------------------------------------- */
+    (function () {
+      var cards = document.querySelectorAll('.feature-card-16-9, .reel-card-9-16');
+
+      cards.forEach(function (card) {
+        var ytId = card.getAttribute('data-youtube-id');
+        var video = card.querySelector('.card-video');
+        var hoverTimeout;
+
+        if (video) {
+          card.addEventListener('mouseenter', function () {
+            var p = video.play();
+            if (p && p.catch) p.catch(function () {});
+          });
+          card.addEventListener('mouseleave', function () {
+            video.pause();
+          });
+        } else if (ytId) {
+          card.addEventListener('mouseenter', function () {
+            hoverTimeout = setTimeout(function () {
+              if (card.querySelector('.yt-hover-preview')) return;
+
+              var iframe = document.createElement('iframe');
+              iframe.className = 'yt-hover-preview';
+              iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+              iframe.setAttribute('allow', 'autoplay');
+              iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + ytId + '&modestbranding=1&rel=0&playsinline=1';
+
+              card.insertBefore(iframe, card.firstChild);
+              card.classList.add('is-previewing');
+            }, 180);
+          });
+
+          card.addEventListener('mouseleave', function () {
+            clearTimeout(hoverTimeout);
+            var iframe = card.querySelector('.yt-hover-preview');
+            if (iframe) {
+              iframe.remove();
+            }
+            card.classList.remove('is-previewing');
+          });
+        }
+      });
+    })();
+
+    /* -------------------------------------------------------------
+       2. SCROLL SCALE & OPACITY DYNAMICS
+    ------------------------------------------------------------- */
+    (function () {
+      var track = document.getElementById('eventsScrollFeed');
+      var animatedBlocks = [
+        track.querySelector('.feature-card-16-9'),
+        track.querySelector('.vertical-cards-grid')
+      ].filter(Boolean);
+
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion || !animatedBlocks.length) return;
+
+      var MIN_SCALE = 0.85;
+      var MIN_OPACITY = 0.2;
+      var ticking = false;
+
+      function updateCards() {
+        var trackTop = track.getBoundingClientRect().top;
+
+        animatedBlocks.forEach(function (block) {
+          var rect = block.getBoundingClientRect();
+          var exited = trackTop - rect.top;
+          var progress = exited / rect.height;
+          progress = Math.max(0, Math.min(1, progress));
+
+          var scale = 1 - progress * (1 - MIN_SCALE);
+          var opacity = 1 - progress * (1 - MIN_OPACITY);
+
+          block.style.transform = 'scale(' + scale.toFixed(4) + ')';
+          block.style.opacity = opacity.toFixed(3);
+        });
+
+        ticking = false;
+      }
+
+      track.addEventListener('scroll', function () {
+        if (!ticking) {
+          window.requestAnimationFrame(updateCards);
+          ticking = true;
+        }
+      }, { passive: true });
+
+      window.addEventListener('resize', updateCards);
+      updateCards();
+    })();
+
+    /* -------------------------------------------------------------
+       3. SMART FULLSCREEN MODAL (MP4 + YOUTUBE + 9:16 REEL SHIFT)
+    ------------------------------------------------------------- */
+    (function () {
+      var modal = document.getElementById('videoModal');
+      var modalVideo = document.getElementById('modalVideo');
+      var modalIframe = document.getElementById('modalIframe');
+      var closeBtn = document.getElementById('videoModalClose');
+      var mediaWrapper = modal.querySelector('.modal-media-wrapper');
+      var cards = Array.prototype.slice.call(document.querySelectorAll('.feature-card-16-9, .reel-card-9-16'));
+
+      function openModal(card) {
+        var ytId = card.getAttribute('data-youtube-id');
+        var isVertical = card.getAttribute('data-aspect') === 'vertical';
+
+        // Snap wrapper into 9:16 vertical ratio if specified
+        if (isVertical) {
+          mediaWrapper.classList.add('is-vertical');
+        } else {
+          mediaWrapper.classList.remove('is-vertical');
+        }
+
+        var thumbVideo = card.querySelector('.card-video');
+        if (thumbVideo) thumbVideo.pause();
+
+        var hoverIframe = card.querySelector('.yt-hover-preview');
+        if (hoverIframe) hoverIframe.remove();
+        card.classList.remove('is-previewing');
+
+        if (ytId) {
+          modalVideo.style.display = 'none';
+          modalVideo.pause();
+          modalVideo.removeAttribute('src');
+
+          var origin = window.location.origin && window.location.origin !== 'null' ? '&origin=' + encodeURIComponent(window.location.origin) : '';
+          modalIframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0&modestbranding=1&enablejsapi=1' + origin;
+          modalIframe.style.display = 'block';
+        } else {
+          var sourceEl = card.querySelector('video source');
+          if (!sourceEl) return;
+
+          modalIframe.style.display = 'none';
+          modalIframe.removeAttribute('src');
+
+          var cleanSrc = sourceEl.getAttribute('src').split('#')[0];
+          modalVideo.src = cleanSrc;
+          modalVideo.style.display = 'block';
+
+          modalVideo.currentTime = 0;
+          modalVideo.muted = false;
+          var playPromise = modalVideo.play();
+          if (playPromise && playPromise.catch) playPromise.catch(function () {});
+        }
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        closeBtn.focus();
+      }
+
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+
+        if (mediaWrapper) mediaWrapper.classList.remove('is-vertical');
+
+        modalVideo.pause();
+        modalVideo.removeAttribute('src');
+        modalVideo.load();
+        modalVideo.style.display = 'none';
+
+        modalIframe.removeAttribute('src');
+        modalIframe.style.display = 'none';
+      }
+
+      cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+          openModal(card);
+        });
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(card);
+          }
+        });
+      });
+
+      closeBtn.addEventListener('click', closeModal);
+
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal || e.target.classList.contains('modal-media-wrapper')) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+          closeModal();
+        }
+      });
+    })();
+  </script>
+
+  <!-- Universal Hierarchical Back Navigation -->
+  <script src="nav.js"></script>
+
+</body>
+</html>

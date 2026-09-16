@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clients &amp; Projects</title>
+  <link rel="icon" type="image/png" href="Assets/main_logo.png" />
+
+  <!-- Google Fonts: Geometric / Extended tech aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400;500;700;800&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       UNIFORM DESIGN TOKENS
+    ------------------------------------------------------------- */
+    :root {
+      --bg-color: #b50505;
+      --text-color: #ffffff;
+      --card-dark: #121010;
+      --card-lime: #c8e018;
+      --font-display: 'Michroma', sans-serif;
+      --font-body: 'Michroma', sans-serif;
+      --page-padding: 3rem 4rem;
+      --gap-base: 1.25rem;
+      --transition-smooth: 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-body);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: var(--page-padding);
+    }
+
+    /* -------------------------------------------------------------
+       BUTTON / INTERACTION UTILITY
+    ------------------------------------------------------------- */
+    .char-btn,
+    .interactive {
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      transition: transform var(--transition-smooth), opacity var(--transition-smooth);
+    }
+
+    .char-btn:hover,
+    .interactive:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
+    }
+
+    .char-btn:focus-visible,
+    .interactive:focus-visible {
+      outline: 2px dashed #ffffff;
+      outline-offset: 4px;
+    }
+
+    /* -------------------------------------------------------------
+       TOP NAVIGATION BAR
+    ------------------------------------------------------------- */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .nav-back {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: transform var(--transition-smooth);
+    }
+
+    .nav-back:hover {
+      transform: translateX(-4px);
+    }
+
+    .nav-back svg {
+      width: 38px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 3.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      transition: opacity var(--transition-smooth);
+    }
+
+    .nav-links a:hover {
+      opacity: 0.75;
+    }
+
+    .nav-links .home-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+
+    /* -------------------------------------------------------------
+       DUAL COLUMN WORKSPACE
+    ------------------------------------------------------------- */
+    .workspace-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      flex-grow: 1;
+      margin-top: 2.8rem;
+      min-height: 0;
+    }
+
+    .column-panel {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .column-title {
+      font-size: 2.6rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 2rem;
+      flex-shrink: 0;
+    }
+
+    .char-item {
+      display: inline-block;
+    }
+
+    /* Scrollable Containers */
+    .scroll-area {
+      flex-grow: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 1.25rem;
+      padding-bottom: 4rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .scroll-area::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* -------------------------------------------------------------
+       CLIENTS COLUMN: 3-COLUMN REFINED STACK
+    ------------------------------------------------------------- */
+    .clients-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap-base);
+      width: 100%;
+      --row-height: calc((100vh - 3.5rem - 2.8rem - 2.6rem - 2rem - 5rem - var(--gap-base)) / 2.7);
+    }
+
+    .client-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap-base);
+      height: var(--row-height);
+      width: 100%;
+      flex-shrink: 0;
+      transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+      will-change: transform, opacity;
+    }
+
+    .client-card {
+      background-color: #ffffff;
+      border-radius: 16px;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      box-sizing: border-box;
+      transition: transform var(--transition-smooth), filter var(--transition-smooth), opacity var(--transition-smooth);
+    }
+
+    .client-card:hover {
+      transform: translateY(-4px);
+      filter: brightness(0.97);
+      opacity: 1 !important;
+    }
+
+    .client-photo {
+      width: auto;
+      height: auto;
+      max-width: 82%;
+      max-height: 82%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------
+       PROJECTS COLUMN (1 HORIZONTAL + 3 VERTICAL ROW STRUCTURE)
+    ------------------------------------------------------------- */
+    .projects-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      width: 100%;
+      padding-bottom: 4rem;
+    }
+
+    .project-card {
+      background-color: var(--card-dark);
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+      transition: transform var(--transition-smooth), filter var(--transition-smooth), opacity var(--transition-smooth);
+    }
+
+    .project-card:hover {
+      transform: translateY(-4px);
+      filter: brightness(1.05);
+      opacity: 1 !important;
+    }
+
+    /* Horizontal container (16:9 Full Width) */
+    .horizontal-banner {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      align-self: stretch;
+    }
+
+    /* YouTube Thumbnail Layer (From more.html) */
+    .yt-thumb-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      z-index: 1;
+    }
+
+    /* On hover, fade out the thumbnail once iframe is ready */
+    .project-card.is-previewing .yt-thumb-layer {
+      opacity: 0;
+    }
+
+    /* Inline Hover Frame (Clipped cleanly inside the rounded card) */
+    .yt-hover-preview {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 120%;
+      height: 120%;
+      transform: translate(-50%, -50%);
+      border: none;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Card Bottom Description Overlay (From more.html) */
+    .card-caption-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2.2rem 1.8rem 1.4rem;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 60%, transparent 100%);
+      color: #ffffff;
+      pointer-events: none;
+      z-index: 5;
+      transform: translateY(10px);
+      opacity: 0;
+      transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .project-card:hover .card-caption-overlay,
+    .project-card:focus-visible .card-caption-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card-caption-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .card-caption-desc {
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      line-height: 1.4;
+      letter-spacing: 0.03em;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    /* 3-Column Vertical Grid Row */
+    .project-vertical-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--gap-base);
+      width: 100%;
+    }
+
+    .vertical-9-16 {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      border-radius: 16px;
+    }
+
+    .project-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------
+       FULLSCREEN VIDEO MODAL (FROM MORE.HTML)
+    ------------------------------------------------------------- */
+    .video-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-media-wrapper {
+      width: 90vw;
+      max-width: 1400px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      transform: scale(0.94);
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-modal.is-open .modal-media-wrapper {
+      transform: scale(1);
+    }
+
+    .video-modal-player,
+    .video-modal-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+      display: none;
+    }
+
+    .video-modal-close {
+      position: absolute;
+      top: 2rem;
+      right: 2.5rem;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(181, 5, 5, 0.85);
+      border: none;
+      border-radius: 50%;
+      color: var(--text-color);
+      cursor: pointer;
+      z-index: 1001;
+      transition: transform var(--transition-smooth), background var(--transition-smooth);
+    }
+
+    .video-modal-close:hover {
+      background: var(--bg-color);
+      transform: scale(1.08);
+    }
+
+    .video-modal-close svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    /* -------------------------------------------------------------
+       RESPONSIVE ADAPTATIONS
+    ------------------------------------------------------------- */
+    @media (max-width: 1024px) {
+      body {
+        height: auto;
+        overflow-y: auto;
+        padding: 2rem 1.5rem;
+      }
+      .workspace-container {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        height: auto;
+      }
+      .scroll-area {
+        overflow-y: visible;
+        padding-right: 0;
+      }
+      .clients-stack {
+        --row-height: 180px;
+      }
+      .column-title {
+        font-size: 2rem;
+      }
+      .nav-links {
+        gap: 1.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .client-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .clients-stack {
+        --row-height: 150px;
+      }
+      .project-vertical-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <button class="nav-back" aria-label="Go back">
+      <svg viewBox="0 0 40 24">
+        <line x1="38" y1="12" x2="4" y2="12"></line>
+        <polyline points="14 3 3 12 14 21"></polyline>
+      </svg>
+    </button>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="contact.html" class="interactive">CONTACT</a></li>
+        <li><a href="how.html" class="interactive">HOW</a></li>
+        <li><a href="why.html" class="interactive">WHY</a></li>
+        <li>
+          <a href="index.html" class="interactive home-icon" aria-label="Home">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"></path>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Dual Column Workspace -->
+  <div class="workspace-container">
+
+    <!-- LEFT PANEL: CLIENTS -->
+    <section class="column-panel">
+      <h2 class="column-title">
+        <span class="char-item">C</span><span class="char-item">L</span><span class="char-item">I</span><span class="char-item">E</span><span class="char-item">N</span><span class="char-item">T</span><span class="char-item">S</span>
+      </h2>
+
+      <div class="scroll-area" id="clientsTrack">
+        <div class="clients-stack" id="clientsStack">
+          
+          <!-- Row 1: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/monkey.png" alt="ADD" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/nilkamal.png" alt="Nilkamal" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/Serendipity.png" alt="Serendipity" />
+            </div>
+          </div>
+
+          <!-- Row 2: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/citroen.png" alt="Citroen" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/pidilite.png" alt="Pidilite" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #000;">
+              <img class="client-photo" src="logos/skillbox.png" alt="Skillbox" />
+            </div>
+          </div>
+
+          <!-- Row 3: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/ADD_T.png" alt="ADD_T" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #000;">
+              <img class="client-photo" src="logos/blf.png" alt="BLF" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/anatomy.png" alt="Anatomy" />
+            </div>
+          </div>
+
+          <!-- Row 4: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/dd.png" alt="DD" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #089e49;">
+              <img class="client-photo" src="logos/e4s.png" alt="E4S" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #000;">
+              <img class="client-photo" src="logos/folksoul.png" alt="Folksoul" />
+            </div>
+          </div>
+
+          <!-- Row 5: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/geom.png" alt="Geom" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/introspecs.png" alt="Introspecs" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #000;">
+              <img class="client-photo" src="logos/kranti.png" alt="Kranti" />
+            </div>
+          </div>
+
+          <!-- Row 6: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/mad.png" alt="MAD" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/milan-edit.png" alt="Milan Edit" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/natureCombat.png" alt="Nature Combat" />
+            </div>
+          </div>
+
+          <!-- Row 7: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/ojs.png" alt="OJS" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #000;">
+              <img class="client-photo" src="logos/sow.png" alt="SOW" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/stir.png" alt="STIR" />
+            </div>
+          </div>
+
+          <!-- Row 8: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/studio.png" alt="Studio" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/tcs.png" alt="TCS" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #000;">
+              <img class="client-photo" src="logos/tgg.png" alt="TGG" />
+            </div>
+          </div>
+
+          <!-- Row 9: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #ebe5dd;">
+              <img class="client-photo" src="logos/tts.png" alt="TTS" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/twi.png" alt="TWI" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/unheard.png" alt="Unheard" />
+            </div>
+          </div>
+
+          <!-- Row 10: 3 Clients -->
+          <div class="client-row">
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/whs.png" alt="WHS" />
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0" style="background-color: #000;">
+              <img class="client-photo" src="logos/ysc.png" alt="YSC"/>
+            </div>
+            <div class="client-card interactive" role="button" tabindex="0">
+              <img class="client-photo" src="logos/saphire.png" alt="Saphire" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: PROJECTS -->
+    <section class="column-panel">
+      <h2 class="column-title">
+        <span class="char-item">P</span><span class="char-item">R</span><span class="char-item">O</span><span class="char-item">J</span><span class="char-item">E</span><span class="char-item">C</span><span class="char-item">T</span><span class="char-item">S</span>
+      </h2>
+
+      <div class="scroll-area" id="projectsTrack">
+        <div class="projects-stack">
+          
+          <!-- ================= SET 1 ================= -->
+          
+          <!-- 1. Horizontal YouTube Video 1 -->
+          <div class="project-card horizontal-banner interactive" role="button" tabindex="0" data-youtube-id="x6PLDgXmZCY" aria-label="Featured Project 1">
+            <img 
+              src="https://img.youtube.com/vi/x6PLDgXmZCY/maxresdefault.jpg" 
+              onerror="this.src='https://img.youtube.com/vi/x6PLDgXmZCY/hqdefault.jpg'" 
+              alt="YouTube video preview" 
+              class="yt-thumb-layer" 
+            />
+            <div class="card-caption-overlay">
+              <span class="card-caption-title">Suhani Shah</span>
+              <span class="card-caption-desc">Event Intro</span>
+            </div>
+          </div>
+
+          <!-- 2. Row of 3 Vertical Videos (9:16) -->
+          <div class="project-vertical-row">
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/suhani.webp">
+                <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/Suhanishah-Zeiss-3_Cut.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">SUHANI SHAH</span>
+                <span class="card-caption-desc">PepsiCo Event</span>
+              </div>
+            </div>
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" data-youtube-id="MAN71HalaQU" aria-label="Vertical Reel 2">
+              <img 
+                src="https://img.youtube.com/vi/MAN71HalaQU/maxresdefault.jpg" 
+                onerror="this.src='https://img.youtube.com/vi/MAN71HalaQU/hqdefault.jpg'" 
+                alt="YouTube Shorts preview" 
+                class="yt-thumb-layer" 
+              />
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">The Monkey Shoulder</span>
+                <span class="card-caption-desc">Diwali Party</span>
+              </div>
+            </div>
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/saphire.webp">
+                <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/Sapphire-Future_me.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">SAPHIRE INTERNATIONAL SCHOOL</span>
+                <span class="card-caption-desc">The Future Self</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= SET 2 ================= -->
+
+          <!-- 3. Horizontal YouTube Video 2 -->
+          <div class="project-card horizontal-banner interactive" role="button" tabindex="0" data-youtube-id="57adKBvo1Wc" aria-label="Featured Project 2">
+            <img 
+              src="Stills/nk.webp" 
+              onerror="this.src='https://img.youtube.com/vi/57adKBvo1Wc/hqdefault.jpg'" 
+              alt="YouTube video preview" 
+              class="yt-thumb-layer" 
+            />
+            <div class="card-caption-overlay">
+              <span class="card-caption-title">Neelkamal - AceTech</span>
+              <span class="card-caption-desc"></span>
+            </div>
+          </div>
+
+          <!-- 4. Row of 3 Vertical Videos (9:16) -->
+          <div class="project-vertical-row">
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/alloy.webp">
+                <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/AM-Your_Style_Your_Alloys.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">Ashok Motors</span>
+                <span class="card-caption-desc">Your Style Your Alloys</span>
+              </div>
+            </div>
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/bhavna.webp">
+                <source src="https://piyush.alokray.com/TTS_Season_1/TTS_Bhavna.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">The Third Space Season 1</span>
+                <span class="card-caption-desc">With Bhavna Kakkar</span>
+              </div>
+            </div>
+
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/dd_30.webp">
+                <source src="https://piyush.alokray.com/Design%20Democracy/DD_30_days_to_go.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">Design Democracy</span>
+                <span class="card-caption-desc">30 Days Invite</span>
+              </div>
+            </div>
+          </div>
+
+           <!-- ================= SET 3 ================= -->
+
+          <!-- 3. Horizontal YouTube Video 2 -->
+          <div class="project-card horizontal-banner interactive" role="button" tabindex="0" data-youtube-id="uoSqautNGfY" aria-label="Featured Project 2">
+            <img 
+              src="https://img.youtube.com/vi/uoSqautNGfY/maxresdefault.jpg" 
+              onerror="this.src='https://img.youtube.com/vi/uoSqautNGfY/hqdefault.jpg'" 
+              alt="YouTube video preview" 
+              class="yt-thumb-layer" 
+            />
+            <div class="card-caption-overlay">
+              <span class="card-caption-title">Neelkamal - AceTech</span>
+              <span class="card-caption-desc"></span>
+            </div>
+          </div>
+
+          <!-- 4. Row of 3 Vertical Videos (9:16) -->
+          <div class="project-vertical-row">
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/divya.webp">
+                <source src="https://piyush.alokray.com/TTS_Season_1/TTS-Divya.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">The Third Space Season 1</span>
+                <span class="card-caption-desc">With Divya Kapoor</span>
+              </div>
+            </div>
+
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/devraj.webp">
+                <source src="https://piyush.alokray.com/TCS-Devraj_Trailer-4_cut.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">The Concreate Story</span>
+                <span class="card-caption-desc">Devraj Trailer</span>
+              </div>
+            </div>
+
+
+            <div class="project-card vertical-9-16 interactive" role="button" tabindex="0" aria-label="Vertical Reel 1">
+              <video class="project-video" muted loop playsinline preload="metadata" poster="Stills/tts_milan_2.webp">
+                <source src="https://piyush.alokray.com/TTS-Milan-2.mp4" type="video/mp4">
+              </video>
+              <div class="card-caption-overlay">
+                <span class="card-caption-title">The Concreate Story</span>
+                <span class="card-caption-desc">Devraj Trailer</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Fullscreen Video Modal (Matches more.html Exactly) -->
+  <div class="video-modal" id="videoModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Video player">
+    <button class="video-modal-close" id="videoModalClose" aria-label="Close video">
+      <svg viewBox="0 0 24 24">
+        <line x1="5" y1="5" x2="19" y2="19"></line>
+        <line x1="19" y1="5" x2="5" y2="19"></line>
+      </svg>
+    </button>
+    <div class="modal-media-wrapper">
+      <video class="video-modal-player" id="modalVideo" controls playsinline></video>
+      <iframe 
+        class="video-modal-iframe" 
+        id="modalIframe" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <script>
+    /* -------------------------------------------------------------
+       1. AUTO-FALLBACK LOADER: Clients
+    ------------------------------------------------------------- */
+    (function () {
+      var fallbackSvg = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="100%" height="100%">
+          <rect width="100%" height="100%" fill="#1a1818"/>
+          <circle cx="200" cy="250" r="45" fill="#333"/>
+          <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="#777" font-family="sans-serif" font-size="20">CLIENT</text>
+        </svg>
+      `);
+
+      var photos = document.querySelectorAll('.client-photo');
+      photos.forEach(function (img) {
+        var originalSrc = img.getAttribute('src');
+        img.onerror = function () {
+          img.src = fallbackSvg;
+        };
+        var testImg = new Image();
+        testImg.onerror = function () {
+          img.src = fallbackSvg;
+        };
+        testImg.src = originalSrc;
+      });
+    })();
+
+    /* -------------------------------------------------------------
+       2. CLIENTS COLUMN: Smooth Gliding Replacement Effect
+    ------------------------------------------------------------- */
+    (function () {
+      var track = document.getElementById('clientsTrack');
+      var rows = Array.prototype.slice.call(document.querySelectorAll('.client-row'));
+      if (!track || rows.length < 2) return;
+
+      track.addEventListener('scroll', function () {
+        var scrollTop = track.scrollTop;
+        var rowHeight = rows[0].offsetHeight + 20;
+
+        var progress1 = Math.min(1, scrollTop / rowHeight);
+        rows[0].style.transform = 'scale(' + (1 - progress1 * 0.08) + ') translateY(' + (-progress1 * 20) + 'px)';
+        rows[0].style.opacity = (1 - progress1 * 0.45).toFixed(2);
+
+        if (rows[1]) {
+          rows[1].style.transform = 'translateY(' + (-scrollTop * 0.1) + 'px)';
+        }
+      }, { passive: true });
+    })();
+
+    /* -------------------------------------------------------------
+       3. SMART HOVER PREVIEWS (IDENTICAL TO MORE.HTML)
+    ------------------------------------------------------------- */
+    (function () {
+      var cards = document.querySelectorAll('.project-card');
+
+      cards.forEach(function (card) {
+        var ytId = card.getAttribute('data-youtube-id');
+        var video = card.querySelector('.project-video');
+        var hoverTimeout;
+
+        if (video) {
+          video.currentTime = 0.001;
+          card.addEventListener('mouseenter', function () {
+            var p = video.play();
+            if (p && p.catch) p.catch(function () {});
+          });
+          card.addEventListener('mouseleave', function () {
+            video.pause();
+          });
+        } else if (ytId) {
+          card.addEventListener('mouseenter', function () {
+            hoverTimeout = setTimeout(function () {
+              if (card.querySelector('.yt-hover-preview')) return;
+
+              var iframe = document.createElement('iframe');
+              iframe.className = 'yt-hover-preview';
+              iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+              iframe.setAttribute('allow', 'autoplay');
+              iframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=1&controls=0&loop=1&playlist=' + ytId + '&modestbranding=1&rel=0&playsinline=1';
+
+              card.insertBefore(iframe, card.firstChild);
+              card.classList.add('is-previewing');
+            }, 180);
+          });
+
+          card.addEventListener('mouseleave', function () {
+            clearTimeout(hoverTimeout);
+            var iframe = card.querySelector('.yt-hover-preview');
+            if (iframe) {
+              iframe.remove();
+            }
+            card.classList.remove('is-previewing');
+          });
+        }
+      });
+    })();
+
+    /* -------------------------------------------------------------
+       4. LIGHTWEIGHT MOMENTUM ENGINE FOR PROJECTS & CLIENTS
+    ------------------------------------------------------------- */
+    (function () {
+      var isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (isTouch) return;
+
+      function bindLerpTrack(track) {
+        if (!track) return;
+
+        var currentScroll = track.scrollTop;
+        var targetScroll = track.scrollTop;
+        var isRunning = false;
+
+        function render() {
+          var diff = targetScroll - currentScroll;
+          currentScroll += diff * 0.14;
+
+          track.scrollTop = Math.round(currentScroll);
+
+          if (Math.abs(diff) > 0.5) {
+            requestAnimationFrame(render);
+          } else {
+            currentScroll = targetScroll;
+            track.scrollTop = currentScroll;
+            isRunning = false;
+          }
+        }
+
+        track.addEventListener('wheel', function (e) {
+          e.preventDefault();
+          var maxScroll = track.scrollHeight - track.clientHeight;
+          targetScroll += e.deltaY * 1.15;
+          targetScroll = Math.max(0, Math.min(maxScroll, targetScroll));
+
+          if (!isRunning) {
+            isRunning = true;
+            requestAnimationFrame(render);
+          }
+        }, { passive: false });
+      }
+
+      bindLerpTrack(document.getElementById('clientsTrack'));
+      bindLerpTrack(document.getElementById('projectsTrack'));
+    })();
+
+    /* -------------------------------------------------------------
+       5. FULLSCREEN MODAL CONTROLLER (IDENTICAL TO MORE.HTML)
+    ------------------------------------------------------------- */
+    (function () {
+      var modal = document.getElementById('videoModal');
+      var modalVideo = document.getElementById('modalVideo');
+      var modalIframe = document.getElementById('modalIframe');
+      var closeBtn = document.getElementById('videoModalClose');
+      var cards = Array.prototype.slice.call(document.querySelectorAll('.project-card'));
+
+      function openModal(card) {
+        var ytId = card.getAttribute('data-youtube-id');
+        var thumbVideo = card.querySelector('.project-video');
+        if (thumbVideo) thumbVideo.pause();
+
+        // Clear any card-level hover iframe while modal is active
+        var hoverIframe = card.querySelector('.yt-hover-preview');
+        if (hoverIframe) hoverIframe.remove();
+        card.classList.remove('is-previewing');
+
+        if (ytId) {
+          modalVideo.style.display = 'none';
+          modalVideo.pause();
+          modalVideo.removeAttribute('src');
+
+          var origin = window.location.origin && window.location.origin !== 'null' ? '&origin=' + encodeURIComponent(window.location.origin) : '';
+          modalIframe.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&rel=0&modestbranding=1&enablejsapi=1' + origin;
+          modalIframe.style.display = 'block';
+        } else {
+          var sourceEl = card.querySelector('video source');
+          if (!sourceEl) return;
+
+          modalIframe.style.display = 'none';
+          modalIframe.removeAttribute('src');
+
+          var cleanSrc = sourceEl.getAttribute('src').split('#')[0];
+          modalVideo.src = cleanSrc;
+          modalVideo.style.display = 'block';
+
+          modalVideo.currentTime = 0;
+          modalVideo.muted = false;
+          var playPromise = modalVideo.play();
+          if (playPromise && playPromise.catch) playPromise.catch(function () {});
+        }
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        closeBtn.focus();
+      }
+
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+
+        modalVideo.pause();
+        modalVideo.removeAttribute('src');
+        modalVideo.load();
+        modalVideo.style.display = 'none';
+
+        modalIframe.removeAttribute('src');
+        modalIframe.style.display = 'none';
+      }
+
+      cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+          openModal(card);
+        });
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(card);
+          }
+        });
+      });
+
+      closeBtn.addEventListener('click', closeModal);
+
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal || e.target.classList.contains('modal-media-wrapper')) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+          closeModal();
+        }
+      });
+    })();
+  </script>
+
+  <!-- Universal Hierarchical Back Navigation -->
+  <script src="nav.js"></script>
+
+</body>
+</html>

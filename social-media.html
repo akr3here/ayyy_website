@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Media</title>
+  <link rel="icon" type="image/png" href="Assets/main_logo.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN TOKENS
+    ------------------------------------------------------------- */
+    :root {
+      --bg-color: #b50505;
+      --text-color: #ffffff;
+      --card-white: #ffffff;
+      --font-display: 'Michroma', sans-serif;
+      --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --page-padding: 3rem 4rem;
+
+      /* Card height locks container cleanly in view on landing */
+      --card-h: clamp(380px, 58vh, 540px);
+      --card-gap: 1.5rem;
+      --col-gap: 2rem; /* Tightened column spacing */
+      --card-radius: 22px;
+      --transition-smooth: 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-display);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: var(--page-padding);
+    }
+
+    /* -------------------------------------------------------------
+       BUTTON / INTERACTION UTILITY
+    ------------------------------------------------------------- */
+    .char-btn,
+    .interactive {
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      transition: transform var(--transition-smooth), opacity var(--transition-smooth);
+    }
+
+    .char-btn:hover,
+    .interactive:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
+    }
+
+    .char-btn:focus-visible,
+    .interactive:focus-visible {
+      outline: 2px dashed #ffffff;
+      outline-offset: 4px;
+    }
+
+    /* -------------------------------------------------------------
+       TOP NAVIGATION BAR
+    ------------------------------------------------------------- */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-shrink: 0;
+      z-index: 50;
+      background: transparent;
+    }
+
+    .nav-back {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: transform var(--transition-smooth);
+    }
+
+    .nav-back:hover {
+      transform: translateX(-4px);
+    }
+
+    .nav-back svg {
+      width: 38px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 3.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      transition: opacity var(--transition-smooth);
+    }
+
+    .nav-links a:hover {
+      opacity: 0.75;
+    }
+
+    .nav-links .home-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+
+    /* -------------------------------------------------------------
+       PAGE TITLE & SUBTITLE
+    ------------------------------------------------------------- */
+    .page-header {
+      margin-top: 1.8rem;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .heading-large {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      margin-bottom: 0.6rem;
+    }
+
+    .char-item {
+      display: inline-block;
+    }
+
+    .sub-copy {
+      display: inline-block;
+      font-size: 1.55rem;
+      line-height: 1.4;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+      background: rgba(125, 0, 0, 0.45);
+      padding: 0.35rem 1rem 0.5rem 0.6rem;
+      max-width: 680px;
+    }
+
+    /* -------------------------------------------------------------
+       MAIN STAGE: 3 TRACKS + STATIC RIGHT RAIL
+    ------------------------------------------------------------- */
+    .media-stage {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 3.5rem;
+      flex-grow: 1;
+      min-height: 0;
+      background: transparent;
+    }
+
+    .reel-columns-wrap {
+      display: flex;
+      gap: var(--col-gap);
+      height: 100%;
+      min-height: 0;
+      background: transparent;
+    }
+
+    /* -------------------------------------------------------------
+       INDIVIDUAL COLUMN TRACK
+    ------------------------------------------------------------- */
+    .column-track {
+      height: 100%;
+      min-height: 0;
+      width: calc(var(--card-h) * 9 / 16);
+      flex-shrink: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: transparent;
+      scrollbar-width: none;
+      position: relative;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      padding-bottom: 10rem;
+    }
+
+    .column-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* -------------------------------------------------------------
+       9:16 VERTICAL VIDEO CARDS
+    ------------------------------------------------------------- */
+    .reel-card {
+      height: var(--card-h);
+      aspect-ratio: 9 / 16;
+      width: 100%;
+      background-color: var(--card-white);
+      border-radius: var(--card-radius);
+      margin: 0 0 var(--card-gap) 0;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      transform-origin: center center;
+      will-change: transform, opacity;
+      display: block;
+    }
+
+    .reel-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------
+       "YOU'RE ALL CAUGHT UP" ELEMENT
+    ------------------------------------------------------------- */
+    .caught-up-wrapper {
+      margin: 1.5rem 0 0 0;
+      width: 100%;
+      background: transparent;
+      scroll-snap-align: end;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .caught-up-badge {
+      background-color: #ffffff;
+      color: #000000;
+      border-radius: 18px;
+      padding: 1.1rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .caught-up-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .caught-up-circle-inner {
+      background: #ffffff;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .caught-up-circle-inner svg {
+      width: 22px;
+      height: 22px;
+      stroke: #dc2743;
+      stroke-width: 2.6;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .caught-up-text {
+      font-family: var(--font-system);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* -------------------------------------------------------------
+       STATIC RIGHT RAIL
+    ------------------------------------------------------------- */
+    .static-right-rail {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      text-align: right;
+      padding-bottom: 2rem;
+      user-select: none;
+      background: transparent;
+    }
+
+    .side-links-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+      margin-bottom: 3rem;
+    }
+
+    .side-link {
+      font-size: 1.35rem;
+      letter-spacing: 0.04em;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+    }
+
+    .side-link:hover {
+      opacity: 0.75;
+      transform: translateX(-3px);
+    }
+
+    .clients-rail-cta {
+      font-size: 1.85rem;
+      line-height: 1.35;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+    }
+
+    .clients-rail-cta:hover {
+      opacity: 0.85;
+      transform: translateX(-4px);
+    }
+
+    /* -------------------------------------------------------------
+       FULLSCREEN VIDEO MODAL
+    ------------------------------------------------------------- */
+    .video-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .video-modal-player {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      transform: scale(0.94);
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .video-modal.is-open .video-modal-player {
+      transform: scale(1);
+    }
+
+    .video-modal-close {
+      position: absolute;
+      top: 2rem;
+      right: 2.5rem;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(181, 5, 5, 0.85);
+      border: none;
+      border-radius: 50%;
+      color: var(--text-color);
+      cursor: pointer;
+      z-index: 1001;
+      transition: transform var(--transition-smooth), background var(--transition-smooth);
+    }
+
+    .video-modal-close:hover {
+      background: var(--bg-color);
+      transform: scale(1.08);
+    }
+
+    .video-modal-close svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    /* -------------------------------------------------------------
+       RESPONSIVE ADJUSTMENTS
+    ------------------------------------------------------------- */
+    @media (max-width: 1100px) {
+      body {
+        height: auto;
+        overflow-y: auto;
+        padding: 2rem 1.5rem;
+      }
+      .media-stage {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 3rem;
+      }
+      .reel-columns-wrap {
+        height: 640px;
+        justify-content: center;
+      }
+      .static-right-rail {
+        align-items: flex-start;
+        text-align: left;
+        padding-bottom: 1rem;
+      }
+      .heading-large {
+        font-size: 2.8rem;
+      }
+      .sub-copy {
+        font-size: 1.2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .reel-columns-wrap {
+        flex-direction: column;
+        height: auto;
+      }
+      .column-track {
+        width: 100%;
+        max-width: calc(var(--card-h) * 9 / 16);
+        margin: 0 auto 2.5rem auto;
+        height: 520px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <button class="nav-back" aria-label="Go back">
+      <svg viewBox="0 0 40 24">
+        <line x1="38" y1="12" x2="4" y2="12"></line>
+        <polyline points="14 3 3 12 14 21"></polyline>
+      </svg>
+    </button>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="contact.html" class="interactive">CONTACT</a></li>
+        <li><a href="how.html" class="interactive">HOW</a></li>
+        <li><a href="why.html" class="interactive">WHY</a></li>
+        <li>
+          <a href="index.html" class="interactive home-icon" aria-label="Home">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"></path>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Title & Subtitle -->
+  <div class="page-header">
+    <h1 class="heading-large">
+      <span class="char-item">S</span><span class="char-item">o</span><span class="char-item">c</span><span class="char-item">i</span><span class="char-item">a</span><span class="char-item">l</span>
+      <span class="char-item">M</span><span class="char-item">e</span><span class="char-item">d</span><span class="char-item">i</span><span class="char-item">a</span>
+    </h1>
+    <div class="sub-copy">
+      We make sure that the content stands out from doomscrolling.
+    </div>
+  </div>
+
+  <!-- Main Stage: 3 Tracks + Fixed Right Rail -->
+  <main class="media-stage">
+
+    <div class="reel-columns-wrap">
+
+      <!-- ================= COLUMN 1 ================= -->
+      <div class="column-track">
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 1">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/suhani.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/Suhanishah-Zeiss-3_Cut.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 7">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/DD.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/DD-Sample-2-White-2cut.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 2">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/NCR.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/NC-R1-SEP-5.mp4" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="caught-up-wrapper">
+          <div class="caught-up-badge interactive" role="button" tabindex="0">
+            <div class="caught-up-circle">
+              <div class="caught-up-circle-inner">
+                <svg viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <span class="caught-up-text">You're all caught up</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= COLUMN 2 ================= -->
+      <div class="column-track">
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 5">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/alloy.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/AM-Your_Style_Your_Alloys.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 4">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/saphire.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/Sapphire-Future_me.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 6">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/whs.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/WHS-gift.mp4" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="caught-up-wrapper">
+          <div class="caught-up-badge interactive" role="button" tabindex="0">
+            <div class="caught-up-circle">
+              <div class="caught-up-circle-inner">
+                <svg viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <span class="caught-up-text">You're all caught up</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= COLUMN 3 ================= -->
+      <div class="column-track">
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 7">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/peter.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/TTS-Peter-NewTrailer.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 8">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/ysc.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/YSC-BTS.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="reel-card interactive" role="button" tabindex="0" aria-label="Social Reel 9">
+          <video class="reel-video" muted loop playsinline preload="none" poster="Stills/ojs.webp">
+            <source src="https://piyush.alokray.com/Social%20Media/Social%20Media/omjoomsuh_instagram.mp4" type="video/mp4">
+          </video>
+        </div>
+
+        <div class="caught-up-wrapper">
+          <div class="caught-up-badge interactive" role="button" tabindex="0">
+            <div class="caught-up-circle">
+              <div class="caught-up-circle-inner">
+                <svg viewBox="0 0 24 24">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <span class="caught-up-text">You're all caught up</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Pinned Static Right Rail -->
+    <aside class="static-right-rail">
+      <nav class="side-links-group">
+        <a href="events.html" class="side-link interactive">Events</a>
+        <a href="podcasts.html" class="side-link interactive">Podcasts</a>
+        <a href="more.html" class="side-link interactive">More</a>
+      </nav>
+
+      <a href="clients-projects.html" class="clients-rail-cta interactive">
+        CLIENTS &amp;<br>PROJECTS
+      </a>
+    </aside>
+
+  </main>
+
+  <!-- Fullscreen Video Modal -->
+  <div class="video-modal" id="videoModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Video player">
+    <button class="video-modal-close" id="videoModalClose" aria-label="Close video">
+      <svg viewBox="0 0 24 24">
+        <line x1="5" y1="5" x2="19" y2="19"></line>
+        <line x1="19" y1="5" x2="5" y2="19"></line>
+      </svg>
+    </button>
+    <video class="video-modal-player" id="modalVideo" controls playsinline></video>
+  </div>
+
+  <script>
+    /* -------------------------------------------------------------
+       1. HOVER-TO-PLAY ENGINE (RETAINING POSTER IMAGE UNTIL HOVER)
+    ------------------------------------------------------------- */
+    (function () {
+      var cards = document.querySelectorAll('.reel-card');
+
+      cards.forEach(function (card) {
+        var video = card.querySelector('.reel-video');
+        if (!video) return;
+
+        card.addEventListener('mouseenter', function () {
+          var playPromise = video.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function () {});
+          }
+        });
+
+        card.addEventListener('mouseleave', function () {
+          video.pause();
+        });
+      });
+    })();
+
+    /* -------------------------------------------------------------
+       2. PRECISE PIXEL WIDTH SYNC FOR CAUGHT-UP BADGES
+    ------------------------------------------------------------- */
+    function syncCardWidths() {
+      var tracks = document.querySelectorAll('.column-track');
+      tracks.forEach(function(track) {
+        var firstCard = track.querySelector('.reel-card');
+        var badgeWrapper = track.querySelector('.caught-up-wrapper');
+        if (firstCard && badgeWrapper) {
+          var cardWidth = firstCard.getBoundingClientRect().width;
+          if (cardWidth > 0) {
+            badgeWrapper.style.width = cardWidth + 'px';
+          }
+        }
+      });
+    }
+
+    window.addEventListener('resize', syncCardWidths);
+    window.addEventListener('load', syncCardWidths);
+    requestAnimationFrame(syncCardWidths);
+
+    /* -------------------------------------------------------------
+       3. SCROLL SCALE & OPACITY DYNAMICS
+    ------------------------------------------------------------- */
+    (function () {
+      var tracks = Array.prototype.slice.call(document.querySelectorAll('.column-track'));
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduceMotion || !tracks.length) return;
+
+      var MIN_SCALE = 0.82;
+      var MIN_OPACITY = 0.2;
+
+      tracks.forEach(function (track) {
+        var cards = Array.prototype.slice.call(track.querySelectorAll('.reel-card'));
+        var ticking = false;
+
+        function updateCards() {
+          var trackTop = track.getBoundingClientRect().top;
+
+          cards.forEach(function (card) {
+            var rect = card.getBoundingClientRect();
+            var exited = trackTop - rect.top;
+            var progress = exited / rect.height;
+            progress = Math.max(0, Math.min(1, progress));
+
+            var scale = 1 - progress * (1 - MIN_SCALE);
+            var opacity = 1 - progress * (1 - MIN_OPACITY);
+
+            card.style.transform = 'scale(' + scale.toFixed(4) + ')';
+            card.style.opacity = opacity.toFixed(3);
+          });
+
+          ticking = false;
+        }
+
+        track.addEventListener('scroll', function () {
+          if (!ticking) {
+            window.requestAnimationFrame(updateCards);
+            ticking = true;
+          }
+        }, { passive: true });
+
+        updateCards();
+      });
+    })();
+
+    /* -------------------------------------------------------------
+       4. FULLSCREEN VIDEO MODAL
+    ------------------------------------------------------------- */
+    (function () {
+      var modal = document.getElementById('videoModal');
+      var modalVideo = document.getElementById('modalVideo');
+      var closeBtn = document.getElementById('videoModalClose');
+      var cards = Array.prototype.slice.call(document.querySelectorAll('.reel-card'));
+
+      function openModal(card) {
+        var sourceEl = card.querySelector('video source');
+        if (!sourceEl) return;
+
+        var thumbVideo = card.querySelector('video');
+        if (thumbVideo) thumbVideo.pause();
+
+        var cleanSrc = sourceEl.getAttribute('src').split('#')[0];
+        modalVideo.src = cleanSrc;
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        modalVideo.currentTime = 0;
+        modalVideo.muted = false;
+        var playPromise = modalVideo.play();
+        if (playPromise && playPromise.catch) playPromise.catch(function () {});
+
+        closeBtn.focus();
+      }
+
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+
+        modalVideo.pause();
+        modalVideo.removeAttribute('src');
+        modalVideo.load();
+      }
+
+      cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+          openModal(card);
+        });
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(card);
+          }
+        });
+      });
+
+      closeBtn.addEventListener('click', closeModal);
+
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeModal();
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+      });
+    })();
+  </script>
+
+  <!-- Universal Hierarchical Back Navigation -->
+  <script src="nav.js"></script>
+
+</body>
+</html>

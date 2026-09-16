@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WHAT do we do?</title>
+  <link rel="icon" type="image/png" href="Assets/main_logo.png" />
+
+  <!-- Google Fonts: Geometric tech display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN TOKENS
+    ------------------------------------------------------------- */
+    :root {
+      --bg-color: #b50505;
+      --bg-dimmed: #f5ebeb; /* Soft warm off-white (avoids harsh white flash) */
+      --text-color: #ffffff;
+      --red-accent: #b50505;
+      --font-display: 'Michroma', sans-serif;
+      --page-padding: 3rem 4rem;
+      --transition-core: 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-display);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: var(--page-padding);
+      transition: background-color var(--transition-core);
+    }
+
+    /* -------------------------------------------------------------
+       INVERSION / SOFT SPOTLIGHT STATE
+    ------------------------------------------------------------- */
+    body.is-spotlight {
+      background-color: #f5e2e2;
+    }
+
+    /* Elements marked .fade-target smoothly vanish */
+    body.is-spotlight .fade-target {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------
+       BUTTON & INTERACTIVE BASE
+    ------------------------------------------------------------- */
+    .interactive {
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      transition: opacity var(--transition-core), transform var(--transition-core);
+    }
+
+    .interactive:focus-visible {
+      outline: 2px dashed currentColor;
+      outline-offset: 4px;
+    }
+
+    /* -------------------------------------------------------------
+       TOP NAVIGATION BAR
+    ------------------------------------------------------------- */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-shrink: 0;
+      z-index: 50;
+      background: transparent;
+      transition: opacity var(--transition-core);
+    }
+
+    .nav-back {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-back:hover {
+      transform: translateX(-4px);
+    }
+
+    .nav-back svg {
+      width: 38px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 3.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.75;
+    }
+
+    .nav-links .home-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+
+    /* -------------------------------------------------------------
+       PAGE TITLE: "WHAT do we?"
+    ------------------------------------------------------------- */
+    .page-header {
+      margin-top: 1.8rem;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+      background: transparent;
+      transition: opacity var(--transition-core);
+    }
+
+    .heading-large {
+      font-size: 3.8rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      line-height: 1.1;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    .heading-large .sub-inline {
+      font-size: 1.45rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    /* -------------------------------------------------------------
+       MAIN STAGE: CENTER HUB & LOWER-RIGHT RAIL
+    ------------------------------------------------------------- */
+    .main-stage {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 0;
+    }
+
+    .services-cluster {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.2rem;
+      user-select: none;
+      transform: translateY(-1rem);
+    }
+
+    .cluster-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3.8rem;
+      flex-wrap: wrap;
+    }
+
+    /* -------------------------------------------------------------
+       SPOTLIGHT LINKS & DRAW UNDERLINE SYSTEM
+    ------------------------------------------------------------- */
+    .spotlight-link {
+      font-size: clamp(1.4rem, 2.2vw, 2.1rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      line-height: 1.2;
+      color: var(--text-color);
+      cursor: pointer;
+      position: relative;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color var(--transition-core), opacity var(--transition-core);
+    }
+
+    .spotlight-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 100%;
+      height: 3px;
+      background-color: var(--red-accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Pinned Lower-Right Anchor */
+    .clients-rail {
+      position: absolute;
+      bottom: 2rem;
+      right: 0;
+      text-align: right;
+      user-select: none;
+      z-index: 20;
+    }
+
+    .clients-btn {
+      display: inline-block;
+      font-size: 2.1rem;
+      line-height: 1.35;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-color);
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      transition: color var(--transition-core), opacity var(--transition-core);
+    }
+
+    .clients-btn::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 3px;
+      background-color: var(--red-accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* -------------------------------------------------------------
+       SPOTLIGHT ACTIVE RULES (COLOR & 0.35 MUTUAL OPACITY)
+    ------------------------------------------------------------- */
+    /* When spotlight is active, all spotlight anchors turn red */
+    body.is-spotlight .spotlight-link,
+    body.is-spotlight .clients-btn {
+      color: var(--red-accent);
+    }
+
+    /* All non-hovered spotlight elements dim to 0.35 opacity */
+    body.is-spotlight .spotlight-link:not(.is-active),
+    body.is-spotlight .clients-btn:not(.is-active) {
+      opacity: 0.35;
+    }
+
+    /* The active hovered element stays fully opaque and draws underline */
+    .spotlight-link.is-active,
+    .clients-btn.is-active {
+      opacity: 1 !important;
+    }
+
+    .spotlight-link.is-active::after,
+    .clients-btn.is-active::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    /* -------------------------------------------------------------
+       RESPONSIVE ADAPTATIONS
+    ------------------------------------------------------------- */
+    @media (max-width: 1100px) {
+      body {
+        height: auto;
+        overflow-y: auto;
+        padding: 2rem 1.5rem;
+      }
+      .heading-large {
+        font-size: 2.8rem;
+      }
+      .heading-large .sub-inline {
+        font-size: 1.2rem;
+      }
+      .main-stage {
+        padding: 5rem 0;
+      }
+      .cluster-row {
+        gap: 2rem;
+      }
+      .spotlight-link {
+        font-size: 1.45rem;
+      }
+      .clients-rail {
+        position: relative;
+        bottom: auto;
+        margin-top: 3rem;
+        text-align: left;
+      }
+      .clients-btn {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (Fades out on spotlight) -->
+  <header class="top-nav fade-target">
+    <button class="nav-back" aria-label="Go back">
+      <svg viewBox="0 0 40 24">
+        <line x1="38" y1="12" x2="4" y2="12"></line>
+        <polyline points="14 3 3 12 14 21"></polyline>
+      </svg>
+    </button>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="contact.html" class="interactive">CONTACT</a></li>
+        <li><a href="how.html" class="interactive">HOW</a></li>
+        <li><a href="why.html" class="interactive">WHY</a></li>
+        <li>
+          <a href="index.html" class="interactive home-icon" aria-label="Home">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"></path>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Title Header (Fades out on spotlight) -->
+  <div class="page-header fade-target">
+    <h1 class="heading-large">
+      WHAT <span class="sub-inline">do we?</span>
+    </h1>
+  </div>
+
+  <!-- Main Stage -->
+  <main class="main-stage">
+
+    <!-- Central Services Cluster -->
+    <div class="services-cluster">
+      <div class="cluster-row">
+        <a href="social-media.html" class="spotlight-link interactive">Social Media</a>
+        <!-- <a href="documentaries.html" class="spotlight-link interactive">Documentaries</a> -->
+        <a href="podcasts.html" class="spotlight-link interactive">Podcasts</a>
+      </div>
+      <div class="cluster-row">
+        <a href="events.html" class="spotlight-link interactive">Events</a>
+        <a href="more.html" class="spotlight-link interactive">More</a>
+      </div>
+    </div>
+
+    <!-- Pinned Lower-Right Rail -->
+    <aside class="clients-rail">
+      <a href="clients-projects.html" class="clients-btn interactive">
+        CLIENTS &amp;<br>PROJECTS
+      </a>
+    </aside>
+
+  </main>
+
+  <!-- Script for unified spotlight & mutual dimming (0.35) -->
+  <script>
+    (function () {
+      var body = document.body;
+      var interactiveItems = Array.prototype.slice.call(
+        document.querySelectorAll('.spotlight-link, .clients-btn')
+      );
+
+      interactiveItems.forEach(function (item) {
+        function activate() {
+          body.classList.add('is-spotlight');
+          item.classList.add('is-active');
+        }
+
+        function deactivate() {
+          body.classList.remove('is-spotlight');
+          item.classList.remove('is-active');
+        }
+
+        item.addEventListener('mouseenter', activate);
+        item.addEventListener('mouseleave', deactivate);
+        item.addEventListener('focus', activate);
+        item.addEventListener('blur', deactivate);
+      });
+    })();
+  </script>
+
+  <!-- Universal Hierarchical Navigation -->
+  <script src="nav.js"></script>
+
+</body>
+</html>

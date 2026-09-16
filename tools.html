@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools We Use</title>
+  <link rel="icon" type="image/png" href="Assets/main_logo.png" />
+
+  <!-- Google Fonts: Geometric / Extended tech aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN TOKENS
+    ------------------------------------------------------------- */
+    :root {
+      --bg-color: #b50505;
+      --text-color: #ffffff;
+      --font-display: 'Michroma', sans-serif;
+      --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --page-padding-x: 4rem;
+      --page-padding-y: 3rem;
+
+      /* Sleek Square Tool Cards */
+      --tool-size: clamp(190px, 24vh, 260px);
+      --tool-radius: 26px;
+      --tool-gap: 1.75rem;
+      --transition-smooth: 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-display);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: var(--page-padding-y) var(--page-padding-x);
+    }
+
+    /* -------------------------------------------------------------
+       BUTTON / INTERACTION UTILITY
+    ------------------------------------------------------------- */
+    .char-btn,
+    .interactive {
+      display: inline-block;
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      position: relative;
+      transition: transform var(--transition-smooth), opacity var(--transition-smooth);
+    }
+
+    .char-btn:hover,
+    .interactive:hover {
+      opacity: 0.85;
+      transform: translateY(-2px);
+    }
+
+    .char-btn:focus-visible,
+    .interactive:focus-visible {
+      outline: 2px dashed #ffffff;
+      outline-offset: 4px;
+    }
+
+    /* -------------------------------------------------------------
+       TOP NAVIGATION BAR
+    ------------------------------------------------------------- */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      flex-shrink: 0;
+      z-index: 50;
+      background: transparent;
+    }
+
+    .nav-back {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: transform var(--transition-smooth);
+    }
+
+    .nav-back:hover {
+      transform: translateX(-4px);
+    }
+
+    .nav-back svg {
+      width: 38px;
+      height: 24px;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 3.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      font-size: 1.15rem;
+      letter-spacing: 0.08em;
+      transition: opacity var(--transition-smooth);
+    }
+
+    .nav-links a:hover {
+      opacity: 0.75;
+    }
+
+    .nav-links .home-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vertical-align: middle;
+    }
+
+    /* -------------------------------------------------------------
+       PAGE TITLE
+    ------------------------------------------------------------- */
+    .page-header {
+      margin-top: 1.8rem;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .heading-large {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+    }
+
+    .char-item {
+      display: inline-block;
+    }
+
+    /* -------------------------------------------------------------
+       MAIN STAGE
+    ------------------------------------------------------------- */
+    .media-stage {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-grow: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    .tools-horizontal-track {
+      width: calc(100% + var(--page-padding-x));
+      margin-right: calc(-1 * var(--page-padding-x));
+      height: auto;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      cursor: grab;
+      user-select: none;
+      padding: 3rem 0;
+      will-change: scroll-position;
+      z-index: 10;
+    }
+
+    .tools-horizontal-track:active {
+      cursor: grabbing;
+    }
+
+    .tools-horizontal-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tools-runway {
+      display: flex;
+      align-items: center;
+      gap: var(--tool-gap);
+      width: max-content;
+      padding-left: 1.0rem;
+    }
+
+    /* -------------------------------------------------------------
+       SLEEK SQUARE TOOL CARDS
+    ------------------------------------------------------------- */
+    .tool-card {
+      width: var(--tool-size);
+      height: var(--tool-size);
+      aspect-ratio: 1 / 1;
+      flex-shrink: 0;
+      border-radius: var(--tool-radius);
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+      transition: transform var(--transition-smooth), background-color var(--transition-smooth), border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+    }
+    .tool-popup-badge {
+      position: absolute;
+      bottom: -3.2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 50;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+    .tool-card:hover .tool-popup-badge {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .tool-card:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.5);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 24px 44px rgba(0, 0, 0, 0.38);
+    }
+
+    .tool-icon-wrap {
+      width: 42%;
+      height: 42%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-icon-wrap svg {
+      width: 100%;
+      height: 100%;
+      fill: #ffffff;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+    }
+
+    .tool-name {
+      font-family: var(--font-system);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.95;
+    }
+
+    /* -------------------------------------------------------------
+       STATIC RIGHT RAIL
+    ------------------------------------------------------------- */
+    .static-right-rail {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      text-align: right;
+      z-index: 20;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .case-studies-cta {
+      pointer-events: auto;
+      font-size: 2.1rem;
+      line-height: 1.3;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-color);
+      text-decoration: none;
+      opacity: 0.35;
+      transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      display: block;
+    }
+
+    .case-studies-cta:hover {
+      opacity: 1;
+      transform: translateX(-4px);
+    }
+
+    /* -------------------------------------------------------------
+       RESPONSIVE ADAPTATIONS
+    ------------------------------------------------------------- */
+    @media (max-width: 1100px) {
+      body {
+        height: auto;
+        overflow-y: auto;
+        padding: 2rem 1.5rem;
+        --page-padding-x: 1.5rem;
+      }
+      .media-stage {
+        padding-bottom: 5rem;
+      }
+      .heading-large {
+        font-size: 2.8rem;
+      }
+      .case-studies-cta {
+        font-size: 1.8rem;
+      }
+      .static-right-rail {
+        position: relative;
+        margin-top: 2rem;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation (No inline onclick to avoid browser history collision) -->
+  <header class="top-nav">
+    <button class="nav-back" aria-label="Go back">
+      <svg viewBox="0 0 40 24">
+        <line x1="38" y1="12" x2="4" y2="12"></line>
+        <polyline points="14 3 3 12 14 21"></polyline>
+      </svg>
+    </button>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="contact.html" class="interactive">CONTACT</a></li>
+        <li><a href="what.html" class="interactive">WHAT</a></li>
+        <li><a href="why.html" class="interactive">WHY</a></li>
+        <li>
+          <a href="index.html" class="interactive home-icon" aria-label="Home">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"></path>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Title Header -->
+  <div class="page-header">
+    <h1 class="heading-large">
+      <span class="char-item">T</span><span class="char-item">o</span><span class="char-item">o</span><span class="char-item">l</span><span class="char-item">s</span>
+      <span class="char-item">w</span><span class="char-item">e</span>
+      <span class="char-item">u</span><span class="char-item">s</span><span class="char-item">e</span>
+    </h1>
+  </div>
+
+  <!-- Main Stage: Infinite Horizontal Loop Track -->
+  <main class="media-stage">
+
+    <div class="tools-horizontal-track" id="toolsTrack">
+      <div class="tools-runway" id="toolsRunway">
+        
+        <!-- Premiere Pro -->
+        <div class="tool-card interactive" tabindex="0">
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Adobe_Premiere_Pro_CC_icon.svg" 
+              alt="After Effects" 
+              style="width: 260%; height: 250%; object-fit: contain;"
+            >
+          </div>
+          <span class="tool-popup-badge">Adobe Premiere Pro</span>
+        </div>
+
+        <!-- After Effects -->
+        <div class="tool-card interactive" tabindex="0">
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Adobe_After_Effects_CC_icon.svg" 
+              alt="After Effects" 
+              style="width: 260%; height: 250%; object-fit: contain;"
+            >
+          </div>
+          <span class="tool-popup-badge">Adobe After Effects</span>
+        </div>
+
+        <!-- DaVinci Resolve -->
+        <div class="tool-card interactive" tabindex="0" style="background: #383838;">
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/DaVinci_Resolve_17_logo.svg" 
+              alt="After Effects" 
+              style="width: 260%; height: 250%; object-fit: contain;"
+            >
+          </div>
+          <span class="tool-popup-badge">DaVinci Resolve</span>
+        </div>
+
+        <!-- Blender -->
+        <div class="tool-card interactive" tabindex="0"  style="background-color: #ffffff;">
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Blender_logo_no_text.svg" 
+              alt="After Effects" 
+              style="width: 200%; height: 200%; object-fit: contain;"
+            >
+          </div>
+          <span class="tool-popup-badge">Blender</span>
+        </div>
+
+
+        <!-- Photoshop -->
+        <div class="tool-card interactive" tabindex="0">
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Adobe_Photoshop_CC_icon.svg" 
+              alt="After Effects" 
+              style="width: 260%; height: 250%; object-fit: contain;"
+            >
+          </div>
+          <span class="tool-popup-badge">Adobe Photoshop</span>
+        </div>
+
+        <!-- Illustrator -->
+        <div class="tool-card interactive" tabindex="0">
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Adobe_Illustrator_CC_icon.svg" 
+              alt="After Effects" 
+              style="width: 260%; height: 250%; object-fit: contain;"
+            >
+          </div>
+          <span class="tool-popup-badge">Adobe Illustrator</span>
+        </div>
+
+        <!-- Figma -->
+        <div class="tool-card interactive" tabindex="0" style="background: #000000;">
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Figma-logo.svg" 
+              alt="After Effects" 
+              style="width: 180%; height: 180%; object-fit: contain; "
+            >
+          </div>
+          <span class="tool-popup-badge">Figma</span>
+        </div>
+
+        <!-- Audition -->
+        <div class="tool-card interactive" tabindex="0" >
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Adobe_Audition_CC_2026_icon.svg" 
+              alt="After Effects" 
+              style="width: 260%; height: 250%; object-fit: contain; "
+            >
+          </div>
+          <span class="tool-popup-badge">Audition</span>
+        </div>
+
+        <!-- Audition -->
+        <div class="tool-card interactive" tabindex="0" >
+          <div class="tool-icon-wrap">
+            <img 
+              src="Assets/Adobe_Firefly_Logo.svg" 
+              alt="After Effects" 
+              style="width: 260%; height: 250%; object-fit: contain; "
+            >
+          </div>
+          <span class="tool-popup-badge">Adobe Firefly</span>
+        </div>
+
+        
+
+      </div>
+    </div>
+
+    <!-- Pinned Static Right Rail -->
+    <aside class="static-right-rail">
+      <a href="case-studies.html" class="case-studies-cta interactive">
+        CASE<br>STUDIES
+      </a>
+    </aside>
+
+  </main>
+
+  <script>
+    /* -------------------------------------------------------------
+       INFINITE SEAMLESS LOOP & MOMENTUM SCROLLER
+    ------------------------------------------------------------- */
+    (function () {
+      var track = document.getElementById('toolsTrack');
+      var runway = document.getElementById('toolsRunway');
+      if (!track || !runway) return;
+
+      var originalHTML = runway.innerHTML;
+      runway.innerHTML = originalHTML + originalHTML + originalHTML;
+
+      var singleLoopWidth = 0;
+
+      function measureWidth() {
+        var cards = runway.querySelectorAll('.tool-card');
+        var originalCount = 9;
+        var gap = parseFloat(getComputedStyle(runway).gap) || 28;
+        if (cards.length >= originalCount) {
+          var singleCardWidth = cards[0].getBoundingClientRect().width;
+          singleLoopWidth = (singleCardWidth + gap) * originalCount;
+        }
+      }
+
+      measureWidth();
+      window.addEventListener('resize', measureWidth);
+
+      var currentScroll = singleLoopWidth;
+      var targetScroll = singleLoopWidth;
+      track.scrollLeft = singleLoopWidth;
+
+      var isRunning = false;
+
+      function normalizeLoop() {
+        if (singleLoopWidth <= 0) return;
+        if (currentScroll >= singleLoopWidth * 2) {
+          currentScroll -= singleLoopWidth;
+          targetScroll -= singleLoopWidth;
+          track.scrollLeft = currentScroll;
+        } else if (currentScroll <= singleLoopWidth * 0.2) {
+          currentScroll += singleLoopWidth;
+          targetScroll += singleLoopWidth;
+          track.scrollLeft = currentScroll;
+        }
+      }
+
+      function render() {
+        var diff = targetScroll - currentScroll;
+        currentScroll += diff * 0.12;
+
+        track.scrollLeft = currentScroll;
+        normalizeLoop();
+
+        if (Math.abs(diff) > 0.5) {
+          requestAnimationFrame(render);
+        } else {
+          currentScroll = targetScroll;
+          track.scrollLeft = currentScroll;
+          isRunning = false;
+        }
+      }
+
+      track.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        var delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        targetScroll += delta * 1.5;
+
+        if (!isRunning) {
+          isRunning = true;
+          requestAnimationFrame(render);
+        }
+      }, { passive: false });
+
+      var isDown = false;
+      var startX = 0;
+      var startScrollLeft = 0;
+
+      track.addEventListener('mousedown', function (e) {
+        isDown = true;
+        startX = e.pageX - track.offsetLeft;
+        startScrollLeft = track.scrollLeft;
+        currentScroll = track.scrollLeft;
+        targetScroll = track.scrollLeft;
+      });
+
+      window.addEventListener('mouseup', function () {
+        isDown = false;
+      });
+
+      track.addEventListener('mousemove', function (e) {
+        if (!isDown) return;
+        e.preventDefault();
+        var x = e.pageX - track.offsetLeft;
+        var walk = (x - startX) * 1.5;
+        targetScroll = startScrollLeft - walk;
+        currentScroll = targetScroll;
+        track.scrollLeft = currentScroll;
+        normalizeLoop();
+      });
+
+      var touchStartX = 0;
+      var touchStartScroll = 0;
+
+      track.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].pageX;
+        touchStartScroll = track.scrollLeft;
+        currentScroll = track.scrollLeft;
+        targetScroll = track.scrollLeft;
+      }, { passive: true });
+
+      track.addEventListener('touchmove', function (e) {
+        var touchX = e.touches[0].pageX;
+        var walk = (touchX - touchStartX) * 1.5;
+        targetScroll = touchStartScroll - walk;
+        currentScroll = targetScroll;
+        track.scrollLeft = currentScroll;
+        normalizeLoop();
+      }, { passive: true });
+    })();
+  </script>
+
+  <!-- Universal Smart Back Navigation -->
+  <script src="nav.js"></script>
+
+</body>
+</html>

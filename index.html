@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASK IT.</title>
+  <link rel="icon" type="image/png" href="Assets/main_logo.png" />
+
+  <!-- Google Fonts: Geometric tech display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Orbitron:wght@400;500;700;800&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN TOKENS
+    ------------------------------------------------------------- */
+    :root {
+      --bg-home: #f6f5f4;
+      --brand-red: #b50505;
+      --white: #ffffff;
+      --font-display: 'Michroma', sans-serif;
+      --transition-core: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      background-color: var(--bg-home);
+      font-family: var(--font-display);
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      transition: background-color var(--transition-core);
+    }
+
+    /* -------------------------------------------------------------
+       KILL CLICK / FOCUS RECTANGLE ON SVG RINGS & LINKS
+    ------------------------------------------------------------- */
+    a, 
+    a:focus, 
+    a:active,
+    .ring-link, 
+    .ring-link:focus, 
+    .ring-link:active,
+    .ring-layer:focus,
+    .ring-layer:active {
+      outline: none !important;
+      box-shadow: none !important;
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-touch-callout: none !important;
+      user-select: none !important;
+    }
+
+    svg, 
+    svg:focus,
+    svg *:focus {
+      outline: none !important;
+    }
+
+    /* Screen Inversion State */
+    body.is-hovered {
+      background-color: var(--brand-red);
+    }
+
+    /* -------------------------------------------------------------
+       TOP-LEFT INVISIBLE HOVER ZONE & TEXT CROSS-FADE
+    ------------------------------------------------------------- */
+    .brand-hover-trigger {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: clamp(340px, 36vw, 560px);
+      height: clamp(300px, 45vh, 520px);
+      padding: 3.5rem 0 0 4.5rem;
+      z-index: 25;
+      cursor: default;
+      display: flex;
+      align-items: flex-start;
+      background: transparent;
+      user-select: none;
+      transition: opacity var(--transition-core);
+    }
+
+    .brand-mark {
+      position: relative;
+      display: grid;
+      grid-template-areas: "stack";
+      pointer-events: none;
+    }
+
+    .brand-headline {
+      grid-area: stack;
+      font-size: 2.2rem;
+      line-height: 1.25;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--brand-red);
+      opacity: 0;
+      transition: opacity 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Default state */
+    .brand-headline.state-questions {
+      opacity: 1;
+    }
+
+    /* Hovered state: Cross-fades cleanly to ASK IT. */
+    .brand-hover-trigger:hover .brand-headline.state-questions {
+      opacity: 0;
+    }
+
+    .brand-hover-trigger:hover .brand-headline.state-ask {
+      opacity: 1;
+      font-size: 2.5rem;
+      line-height: 1.15;
+      letter-spacing: 0.12em;
+    }
+
+    /* Fade entire brand element cleanly during ring hover inversion */
+    body.is-hovered .brand-hover-trigger {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------
+       CONCENTRIC DONUT DISC STAGE
+    ------------------------------------------------------------- */
+    .rings-wrapper {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 48vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      z-index: 20;
+    }
+
+    .rings-svg {
+      width: 100%;
+      height: 115%;
+      overflow: visible;
+      transform: translateX(3%);
+    }
+
+    /* Base ring stroke & fill */
+    .ring-layer {
+      fill: var(--brand-red);
+      stroke: var(--white);
+      stroke-width: 5px;
+      cursor: pointer;
+      transition: opacity var(--transition-core), stroke var(--transition-core);
+    }
+
+    .ring-label {
+      font-family: var(--font-display);
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      fill: var(--white);
+      pointer-events: none;
+      user-select: none;
+      transition: opacity var(--transition-core);
+    }
+
+    /* During hover: Ring strokes and shapes dissolve completely */
+    body.is-hovered .ring-layer {
+      stroke: transparent !important;
+      opacity: 0 !important;
+    }
+
+    body.is-hovered .ring-label {
+      opacity: 0 !important;
+    }
+
+    /* -------------------------------------------------------------
+       HOVER PREVIEW STAGE
+    ------------------------------------------------------------- */
+    .preview-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      padding-left: clamp(3rem, 6vw, 6.5rem);
+      z-index: 40;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity var(--transition-core);
+    }
+
+    body.is-hovered .preview-screen {
+      opacity: 1;
+    }
+
+    .preview-layout {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Left stacked keywords (e.g., SERVICES . / PROJECTS .) */
+    .preview-keywords {
+      font-size: clamp(1.8rem, 3.2vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.35;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      white-space: pre-line;
+      text-transform: uppercase;
+      user-select: none;
+      transform: translateX(-15px);
+      transition: transform var(--transition-core);
+    }
+
+    /* Center-right main section label */
+    .preview-title {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: clamp(1.4rem, 2vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--white);
+      text-transform: uppercase;
+      user-select: none;
+      transition: left var(--transition-core);
+    }
+
+    /* Dynamic placements matching the exact ring positions */
+    body.is-hovered.pos-what .preview-title {
+      left: 50vw;
+    }
+
+    body.is-hovered.pos-how .preview-title {
+      left: 57vw;
+    }
+
+    body.is-hovered.pos-why .preview-title {
+      left: 64vw;
+    }
+
+    body.is-hovered .preview-keywords {
+      transform: translateX(0);
+    }
+
+    /* -------------------------------------------------------------
+       RESPONSIVE ADJUSTMENTS
+    ------------------------------------------------------------- */
+    @media (max-width: 1024px) {
+      .brand-hover-trigger {
+        padding: 2rem 0 0 2rem;
+        width: 60vw;
+        height: 35vh;
+      }
+      .brand-headline {
+        font-size: 1.6rem;
+      }
+      .brand-hover-trigger:hover .brand-headline.state-ask {
+        font-size: 1.8rem;
+      }
+      .rings-wrapper {
+        width: 90vw;
+      }
+      .rings-svg {
+        transform: translateX(18%);
+      }
+      .preview-layout {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 2rem;
+      }
+      .preview-title {
+        position: static;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top-Left Large Invisible Hover Trigger -->
+  <div class="brand-hover-trigger" aria-label="Brand statement">
+    <div class="brand-mark">
+      <h1 class="brand-headline state-questions">
+        RIGHT<br>QUESTIONS<br>DESERVES<br>RIGHT<br>ANSWERS
+      </h1>
+      <h1 class="brand-headline state-ask">
+        ASK<br>IT .
+      </h1>
+    </div>
+  </div>
+
+  <!-- Concentric Rings (SVG) -->
+  <div class="rings-wrapper">
+    <svg class="rings-svg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+      
+      <!-- 1. "WHAT" DONUT (Outer ring) -->
+      <a href="what.html" class="ring-link" data-title="WHAT" data-sub="SERVICES .&#10;PROJECTS .">
+        <path class="ring-layer" fill-rule="evenodd"
+          d="M 500 50
+             A 450 450 0 1 1 499.9 50 Z
+             M 500 190
+             A 310 310 0 1 0 500.1 190 Z" />
+        <text class="ring-label" x="120" y="508" text-anchor="middle">WHAT</text>
+      </a>
+
+      <!-- 2. "HOW" DONUT (Middle ring) -->
+      <a href="how.html" class="ring-link" data-title="HOW" data-sub="APPROACH .&#10;TOOLS .">
+        <path class="ring-layer" fill-rule="evenodd"
+          d="M 500 190
+             A 310 310 0 1 1 499.9 190 Z
+             M 500 340
+             A 160 160 0 1 0 500.1 340 Z" />
+        <text class="ring-label" x="250" y="508" text-anchor="middle">HOW</text>
+      </a>
+
+      <!-- 3. "WHY" INNER CIRCLE (Center core) -->
+      <a href="why.html" class="ring-link" data-title="WHY" data-sub="CAUSE .&#10;BELIEF">
+        <circle class="ring-layer" cx="500" cy="500" r="160" />
+        <text class="ring-label" x="400" y="508" text-anchor="middle">WHY</text>
+      </a>
+
+    </svg>
+  </div>
+
+  <!-- Preview Screen Overlay -->
+  <div class="preview-screen" aria-hidden="true">
+    <div class="preview-layout">
+      <div class="preview-keywords" id="previewKeywords"></div>
+      <div class="preview-title" id="previewTitle"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var body = document.body;
+      var previewTitle = document.getElementById('previewTitle');
+      var previewKeywords = document.getElementById('previewKeywords');
+      var ringLinks = document.querySelectorAll('.ring-link');
+      var activeUrl = '';
+
+      ringLinks.forEach(function (link) {
+        var pageTitle = link.getAttribute('data-title');
+        var pageSub = link.getAttribute('data-sub');
+        var targetHref = link.getAttribute('href');
+
+        function activate() {
+          activeUrl = targetHref;
+          previewTitle.textContent = pageTitle;
+          previewKeywords.textContent = pageSub;
+
+          body.classList.remove('pos-what', 'pos-how', 'pos-why');
+          body.classList.add('pos-' + pageTitle.toLowerCase());
+          body.classList.add('is-hovered');
+        }
+
+        function deactivate() {
+          body.classList.remove('is-hovered', 'pos-what', 'pos-how', 'pos-why');
+        }
+
+        link.addEventListener('mouseenter', activate);
+        link.addEventListener('mouseleave', deactivate);
+        link.addEventListener('focus', activate);
+        link.addEventListener('blur', deactivate);
+      });
+
+      // Navigate anywhere on click during inverted preview
+      document.addEventListener('click', function (e) {
+        if (body.classList.contains('is-hovered') && activeUrl) {
+          window.location.href = activeUrl;
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
