@@ -226,19 +226,20 @@
     .brand-logo-box {
       width: 76px;
       height: 76px;
-      background-color: var(--card-dark);
-      border-radius: 4px;
+      background-color: var(--card-white);
+      border-radius: 6px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      padding: 0.5rem;
     }
 
     .brand-logo-img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
     }
 
@@ -271,7 +272,6 @@
     /* -------------------------------------------------------------
        MODULAR MEDIA CONTAINERS (REDUCED TO 70%)
     ------------------------------------------------------------- */
-    /* Container 1: Full Horizontal 16:9 scaled to 70% */
     .case-media-16-9 {
       width: 70%;
       aspect-ratio: 16 / 9;
@@ -283,7 +283,6 @@
       position: relative;
     }
 
-    /* Container 2: 3 Vertical 9:16 Grid scaled to 70% */
     .case-media-vertical-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -449,12 +448,12 @@
     }
 
     /* -------------------------------------------------------------
-       ASYMMETRIC EXAMPLES SECTION (UNTOUCHED)
+       ASYMMETRIC EXAMPLES SECTION (MATCHED HEIGHT + FLUSH ALIGNMENT)
     ------------------------------------------------------------- */
     .examples-section {
       width: 100%;
       margin-top: 4rem;
-      padding-bottom: 0rem;
+      padding-bottom: 2rem;
     }
 
     .examples-title {
@@ -466,37 +465,27 @@
       margin-bottom: 3.5rem;
     }
 
-    /* Staggered vertical track */
     .staggered-examples-grid {
       display: flex;
       flex-direction: column;
-      gap: 4rem;
+      gap: 5rem;
       width: 100%;
     }
 
-    /* Single Item: locks to ~34% width of the feed track */
     .stagger-item {
-      width: clamp(210px, 22.95%, 260px);
+      width: 100%;
       display: flex;
       flex-direction: column;
+      align-items: flex-start;
     }
 
-    /* Positioning */
-    .stagger-item.align-left {
-      align-self: flex-start;
-    }
-
-    .stagger-item.align-right {
-      align-self: flex-end;
-      margin-top: -3rem; 
-    }
-
-    /* Header Text (Name + Role) */
+    /* Metadata text */
     .stagger-meta {
       margin-bottom: 0.85rem;
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+      text-align: left;
     }
 
     .stagger-name {
@@ -517,16 +506,49 @@
       line-height: 1.3;
     }
 
+    /* Row locks height so 9:16 reel and 16:9 breakdown image align top-and-bottom */
+    .stagger-media-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      height: clamp(312px, 30vw, 456px);
+      width: 100%;
+      justify-content: flex-start;
+    }
+
     /* 9:16 Vertical Video Card */
     .stagger-card-9-16 {
-      width: 100%;
+      height: 100%;
       aspect-ratio: 9 / 16;
+      width: auto;
+      flex-shrink: 0;
       background-color: var(--card-white);
       border-radius: var(--card-radius);
       overflow: hidden;
       cursor: pointer;
       position: relative;
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+    }
+
+    /* 16:9 Horizontal Breakdown Image Container */
+    .stagger-breakdown-16-9 {
+      height: 100%;
+      aspect-ratio: 16 / 9;
+      width: auto;
+      flex-shrink: 0;
+      background-color: var(--card-dark);
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+    }
+
+    .breakdown-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
     }
 
     /* -------------------------------------------------------------
@@ -575,7 +597,7 @@
       }
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 768px) {
       .case-media-vertical-grid {
         grid-template-columns: 1fr;
       }
@@ -586,13 +608,21 @@
         width: 60px;
         height: 60px;
       }
-      .stagger-item {
-        width: clamp(210px, 27%, 305px);
-        display: flex;
+      .stagger-media-row {
         flex-direction: column;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        scroll-margin-top: 2rem;
+        height: auto;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      .stagger-card-9-16 {
+        width: 100%;
+        max-width: 260px;
+        height: auto;
+      }
+      .stagger-breakdown-16-9 {
+        width: 100%;
+        max-width: 440px;
+        height: auto;
       }
     }
   </style>
@@ -642,10 +672,12 @@
       <article class="case-item">
         
         <!-- Brand Header -->
-        <div class="brand-headline" style="display: flex; align-items: center; gap: 1.5rem;">
-          <div class="brand-logo-box"><img src="logos/stir_logo.png" alt="The Third Space Logo" class="brand-logo-img" style="background-color: #ffffff;"/></div>
-          <h2 class="brand-name">The Third Space <br> X Stir World</h2>
-          <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.75); text-transform: uppercase; transform: translateY(-38px);">The Milan Edit</h4>
+        <div class="brand-headline">
+          <div class="brand-logo-box"><img src="logos/stir.png" alt="STIR World Logo" class="brand-logo-img" /></div>
+          <div>
+            <h2 class="brand-name">The Third Space <br> X Stir World</h2>
+            <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.75); text-transform: uppercase;">The Milan Edit</h4>
+          </div>
         </div>
 
         <!-- Description -->
@@ -734,10 +766,12 @@
       <article class="case-item">
         
         <!-- Brand Header -->
-        <div class="brand-headline" style="display: flex; align-items: center; gap: 1.5rem;">
-          <div class="brand-logo-box" style="background-color: #ffffff;"><img src="logos/dd_logo.png" alt="Design Democracy Logo" class="brand-logo-img" style="width: 160%; height: 160%;"/></div>
-          <h2 class="brand-name">Design Democracy</h2>
-          <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.75); text-transform: uppercase; transform: translateY(-2px);">Hyderabad 2026</h4>
+        <div class="brand-headline">
+          <div class="brand-logo-box"><img src="logos/dd.png" alt="Design Democracy Logo" class="brand-logo-img" /></div>
+          <div>
+            <h2 class="brand-name">Design Democracy</h2>
+            <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.75); text-transform: uppercase;">Hyderabad 2026</h4>
+          </div>
         </div>
 
         <!-- Description -->
@@ -772,7 +806,7 @@
               <source src="https://piyush.alokray.com/Design%20Democracy/DD_10_Days_To_go_1_cut.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 1">
+          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 2">
             <video 
               class="case-video" 
               muted 
@@ -783,7 +817,7 @@
               <source src="https://piyush.alokray.com/Design%20Democracy/DD_30_days_to_go.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 1">
+          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 3">
             <video 
               class="case-video" 
               muted 
@@ -805,7 +839,7 @@
 
         <!-- 3-Column Vertical 9:16 Grid (70% Sizing) -->
         <div class="case-media-vertical-grid">
-          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 1">
+          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 4">
             <video 
               class="case-video" 
               muted 
@@ -816,7 +850,7 @@
               <source src="https://piyush.alokray.com/Design%20Democracy/DD_GALLERY.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 1">
+          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 5">
             <video 
               class="case-video" 
               muted 
@@ -827,7 +861,7 @@
               <source src="https://piyush.alokray.com/Design%20Democracy/DD_Get_your_pass.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 1">
+          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 6">
             <video 
               class="case-video" 
               muted 
@@ -849,9 +883,11 @@
         
         <!-- Brand Header -->
         <div class="brand-headline">
-          <div class="brand-logo-box"><img src="logos/the_third_space_logo.png" alt="The Third Space Logo" class="brand-logo-img"/></div>
-          <h2 class="brand-name">The Third Space</h2>
-          <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.75); text-transform: uppercase; transform: translateY(-6px);">Season 1</h4>
+          <div class="brand-logo-box"><img src="logos/tts.png" alt="The Third Space Logo" class="brand-logo-img"/></div>
+          <div>
+            <h2 class="brand-name">The Third Space</h2>
+            <h4 style="margin: 0; font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; letter-spacing: 0.08em; color: rgba(255, 255, 255, 0.75); text-transform: uppercase;">Season 1</h4>
+          </div>
         </div>
 
         <!-- Description -->
@@ -889,7 +925,7 @@
               <source src="https://piyush.alokray.com/TTS_Season_1/TTS-Amit.mp4" type="video/mp4">
             </video>
           </div>
-          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 1">
+          <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 2">
             <video 
               class="case-video" 
               muted 
@@ -900,25 +936,20 @@
               <source src="https://piyush.alokray.com/TTS_Season_1/TTS_Peter_2.mp4" type="video/mp4">
             </video>
           </div>
-         <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 1">
+         <div class="case-media-9-16 interactive" role="button" tabindex="0" aria-label="Reel 3">
             <video 
               class="case-video" 
               muted 
               loop 
               playsinline 
               preload="none" 
-              poster="Stills/saurabh.png">
+              poster="Stills/saurabh.webp">
               <source src="https://piyush.alokray.com/TTS_Season_1/TTS_Sourabh.mp4" type="video/mp4">
             </video>
           </div>
         </div>
-        
-        <!-- 3-Column Vertical 9:16 Grid (70% Sizing) -->
-        <div class="case-media-vertical-grid"></div>
 
         <div class="case-description">
-          <p></p>
-          <p></p>
           <p></p>
           <br>
           <p>
@@ -929,7 +960,7 @@
       </article>
 
       <!-- =========================================================
-           ASYMMETRICAL EXAMPLES SECTION (UNTOUCHED)
+           ASYMMETRICAL EXAMPLES SECTION
            ========================================================= -->
       <section class="examples-section">
         
@@ -937,41 +968,61 @@
 
         <div class="staggered-examples-grid">
 
-          <!-- Example 1: Left -->
-          <div class="stagger-item align-left">
+          <!-- Example 1: Divya Kapoor (Reel on Left, 16:9 Breakdown Image on Right) -->
+          <div class="stagger-item">
             <div class="stagger-meta">
               <span class="stagger-name">Divya Kapoor</span>
               <span class="stagger-role">from Nicobar</span>
             </div>
-            <div class="stagger-card-9-16 interactive" role="button" tabindex="0" aria-label="Divya Kapoor Reel">
-              <video 
-              class="case-video" 
-              muted 
-              loop 
-              playsinline 
-              preload="none" 
-              poster="Stills/divya.webp">
-              <source src="https://piyush.alokray.com/TTS_Season_1/TTS-Divya.mp4" type="video/mp4">
-            </video>
+            <div class="stagger-media-row">
+              <div class="stagger-card-9-16 interactive" role="button" tabindex="0" aria-label="Divya Kapoor Reel">
+                <video 
+                  class="case-video" 
+                  muted 
+                  loop 
+                  playsinline 
+                  preload="none" 
+                  poster="Stills/divya.webp">
+                  <source src="https://piyush.alokray.com/TTS_Season_1/TTS-Divya.mp4" type="video/mp4">
+                </video>
+              </div>
+              <div class="stagger-breakdown-16-9">
+                <img 
+                  src="Stills/divya_breakdown.png" 
+                  alt="Divya Kapoor breakdown" 
+                  class="breakdown-img" 
+                  onerror="this.src='Stills/divya.webp'"
+                />
+              </div>
             </div>
           </div>
 
-          <!-- Example 2: Right -->
-          <div class="stagger-item align-right">
+          <!-- Example 2: Bhavna Kakkar (Breakdown Image on Left, Reel on Right — Aligned to Far Left) -->
+          <div class="stagger-item">
             <div class="stagger-meta">
               <span class="stagger-name">Bhavna kakkar</span>
               <span class="stagger-role">Founding Director, Latitude 28</span>
             </div>
-            <div class="stagger-card-9-16 interactive" role="button" tabindex="0" aria-label="Bhavna kakkar Reel">
-              <video 
-              class="case-video" 
-              muted 
-              loop 
-              playsinline 
-              preload="none" 
-              poster="Stills/bhavna.webp">
-              <source src="https://piyush.alokray.com/TTS_Season_1/TTS_Bhavna.mp4" type="video/mp4">
-            </video>
+            <div class="stagger-media-row">
+              <div class="stagger-breakdown-16-9">
+                <img 
+                  src="Stills/bhavna_breakdown.png" 
+                  alt="Bhavna Kakkar breakdown" 
+                  class="breakdown-img" 
+                  onerror="this.src='Stills/bhavna.webp'"
+                />
+              </div>
+              <div class="stagger-card-9-16 interactive" role="button" tabindex="0" aria-label="Bhavna Kakkar Reel">
+                <video 
+                  class="case-video" 
+                  muted 
+                  loop 
+                  playsinline 
+                  preload="none" 
+                  poster="Stills/bhavna.webp">
+                  <source src="https://piyush.alokray.com/TTS_Season_1/TTS_Bhavna.mp4" type="video/mp4">
+                </video>
+              </div>
             </div>
           </div>
 
